@@ -1,5 +1,6 @@
 local cfg = Config.school_coordinates
 local PlayerData = {}
+local last_class = -1
 
 setupBlip({
 	title="University of San Andreas, Los Santos", colour=1, id=685,
@@ -54,6 +55,41 @@ function classes_available(class_name, friendly_name)
 		end
 	end
 end
+
+function begin_class(class_name)
+	if last_class == GetClockDayOfWeek() then
+		ESX.ShowNotification("Classes are over for today")
+		return
+	end
+	last_class = GetClockDayOfWeek()
+	FreezeEntityPosition(PlayerPedId(), true)
+	if class_name == 'electrical_engineering' then electrical_engineering_class(1) end
+end
+
+function electrical_engineering_class(recursive_count)
+	local learned = false
+	local class_result = -1
+
+	if recursive_count > 10 then
+		FreezeEntityPosition(PlayerPedId(), false)
+		return
+	end
+	
+	TriggerEvent('ultra-voltlab', 30, function(result, reason) class_result = result end)
+	while class_result == -1 do Wait(100) end
+	Wait(4000) -- Safely wait for voltlab exit animations
+
+	if class_result ~= 1 then 
+		FreezeEntityPosition(PlayerPedId(), false)
+		return
+	end
+
+	ESX.TriggerServerCallback('esx_school:learn', function() learned = true end, 'electrical_engineering', 100)
+	while not learned do Wait(100) end
+	electrical_engineering_class(recursive_count + 1)
+end
+
+
 
 function enroll_player()
 	ESX.TriggerServerCallback('esx_school:enroll', function (enrolled)

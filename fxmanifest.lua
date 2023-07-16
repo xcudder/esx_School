@@ -7,6 +7,7 @@ description 'ESX School'
 shared_script '@es_extended/imports.lua'
 
 server_scripts {
+	'@oxmysql/lib/MySQL.lua',
 	'config.lua',
 	'helpers/functions.lua',
 	'server/main.lua'
