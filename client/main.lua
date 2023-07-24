@@ -42,9 +42,39 @@ Citizen.CreateThread(function()
 			classes_available('law', 'San Andreas Law')
 			classes_available('electrical_engineering', 'Electrical Engineering')
 			classes_available('information_technology', 'Computer Science')
+			available_dorms()
 		end
 	end
 end)
+
+function available_dorms()
+	local ov3 = Config.dorms
+	local iv3 = vector3(151.41, -1007.96, -99.0)
+
+	DrawEntryMarker(ov3)
+	if coordinates_close_enough(ov3) then
+		DisplayHelpText("Press ~INPUT_CONTEXT~ to attend access the dorms")
+		if(IsControlJustReleased(1, 38)) then
+			DoScreenFadeOut(1000)
+			Wait(1000)
+			SetEntityCoords(PlayerPedId(), 151.41, -1007.96, -100.0)
+			DisplayRadar(false)
+			DoScreenFadeIn(1000)
+		end
+	end
+
+	DrawEntryMarker(ov3)
+	if coordinates_close_enough(iv3) then
+		DisplayHelpText("Press ~INPUT_CONTEXT~ to exit to campus")
+		if(IsControlJustReleased(1, 38)) then
+			DoScreenFadeOut(1000)
+			Wait(1000)
+			SetEntityCoords(PlayerPedId(), -1650.0922, 150.8966, 62.153809)
+			DisplayRadar(true)
+			DoScreenFadeIn(1000)
+		end
+	end
+end
 
 function classes_available(class_name, friendly_name)
 	DrawEntryMarker(Config.class_locations[class_name])
@@ -57,11 +87,11 @@ function classes_available(class_name, friendly_name)
 end
 
 function begin_class(class_name)
-	if last_class == GetClockDayOfWeek() then
+	if last_class == GetClockDayOfMonth() .. "/" .. GetClockMonth() then
 		ESX.ShowNotification("Classes are over for today")
 		return
 	end
-	last_class = GetClockDayOfWeek()
+	last_class = GetClockDayOfMonth() .. "/" .. GetClockMonth()
 	FreezeEntityPosition(PlayerPedId(), true)
 	if class_name == 'electrical_engineering' then electrical_engineering_class(1) end
 end
